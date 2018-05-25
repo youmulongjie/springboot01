@@ -1,0 +1,17 @@
+server:
+  port: 80                                        #端口号
+  servlet:
+    context-path: /demo01                         #跟路径
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update                            #ddl 策略
+    show-sql: true                                # 开启sql输出
+
+  datasource:                                     #datasource
+    driver-class-name: com.mysql.jdbc.Driver      #数据库 驱动
+    url: jdbc:mysql://127.0.0.1:3306/springboot01 #数据库 url
+    username: root                                #数据库 用户名
+    password: andyadmin                           #数据库 密码
+
