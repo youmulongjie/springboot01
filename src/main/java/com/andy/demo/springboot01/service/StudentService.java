@@ -3,14 +3,14 @@
  * FileName: StudentService
  * Author:   59458
  * Date:     2018/5/25 22:48
- * Description: Student Service
+ * Description: StudentEntity Service
  * History:
  * <author>          <time>          <version>          <desc>
  * 作者姓名           修改时间           版本号              描述
  */
 package com.andy.demo.springboot01.service;
 
-import com.andy.demo.springboot01.bean.Student;
+import com.andy.demo.springboot01.entity.StudentEntity;
 import com.andy.demo.springboot01.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * 〈一句话功能简述〉<br>
- * 〈Student Service〉
+ * 〈StudentEntity Service〉
  *
  * @author 59458
  * @create 2018/5/25
@@ -39,7 +39,7 @@ public class StudentService {
      * @param student
      * @return 返回新增的实体
      */
-    public Student save(@RequestParam("student") Student student) {
+    public StudentEntity save(@RequestParam("student") StudentEntity student) {
         return studentRepository.save(student);
     }
 
@@ -48,7 +48,7 @@ public class StudentService {
      *
      * @return 实体集合
      */
-    public List<Student> list() {
+    public List<StudentEntity> list() {
         return studentRepository.findAll();
     }
 
@@ -58,7 +58,7 @@ public class StudentService {
      * @param id 查询ID
      * @return 实体对象
      */
-    public Student getOneById(Long id) {
+    public StudentEntity getOneById(Long id) {
         return studentRepository.findById(id).get();
     }
 
@@ -69,7 +69,7 @@ public class StudentService {
      * @param student 更新的对象
      * @return 更新后的对象
      */
-    public Student updateById(Long id, Student student) {
+    public StudentEntity updateById(Long id, StudentEntity student) {
         student.setId(id);
         return studentRepository.save(student);
     }
@@ -81,5 +81,35 @@ public class StudentService {
      */
     public void deleteById(Long id) {
         studentRepository.deleteById(id);
+    }
+
+    /**
+     * 按年龄查找
+     *
+     * @param age 年龄
+     * @return
+     */
+    public List<StudentEntity> findByAgeGreaterThanEqual(int age) {
+        return studentRepository.findByAgeGreaterThanEqual(age);
+    }
+
+    /**
+     * 按 兴趣爱好 查找
+     *
+     * @param hobby 兴趣爱好
+     * @return
+     */
+    public List<StudentEntity> findByHobbyLike(String hobby) {
+        return studentRepository.findByHobbyLike("%" + hobby + "%");
+    }
+
+    /**
+     * 按 性别 查找
+     *
+     * @param sex 性别
+     * @return
+     */
+    public List<StudentEntity> findBySex(String sex) {
+        return studentRepository.findBySex(sex);
     }
 }

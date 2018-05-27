@@ -73,17 +73,6 @@ public class HttpAspect {
     }
 
     /**
-     * 在目标方法发生异常时执行
-     *
-     * @param throwable
-     */
-    @AfterThrowing(pointcut = "print()", throwing = "throwable")
-    public void doThrowing(Throwable throwable) {
-        log.error("呃呃，出错了！", throwable);
-    }
-
-
-    /**
      * 打印 访问的类方法信息
      *
      * @param joinPoint
