@@ -10,12 +10,13 @@
  */
 package com.andy.demo.springboot01.service;
 
+import com.andy.demo.springboot01.bean.CodeEnum;
 import com.andy.demo.springboot01.entity.StudentEntity;
+import com.andy.demo.springboot01.exception.MyException;
 import com.andy.demo.springboot01.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class StudentService {
      * @param student
      * @return 返回新增的实体
      */
-    public StudentEntity save(@RequestParam("student") StudentEntity student) {
+    public StudentEntity save(StudentEntity student) throws Exception {
         return studentRepository.save(student);
     }
 
@@ -48,7 +49,7 @@ public class StudentService {
      *
      * @return 实体集合
      */
-    public List<StudentEntity> list() {
+    public List<StudentEntity> list() throws Exception {
         return studentRepository.findAll();
     }
 
@@ -58,11 +59,13 @@ public class StudentService {
      * @param id 查询ID
      * @return 实体对象
      */
-    public StudentEntity getOneById(Long id) {
-         if(studentRepository.findById(id).isPresent()){
-             return studentRepository.findById(id).get();
-         }
-         return null;
+    public StudentEntity getOneById(Long id) throws Exception {
+        // 如果存在返回查询的对象，不存在则抛出异常
+        if (studentRepository.findById(id).isPresent()) {
+            return studentRepository.findById(id).get();
+        }
+        throw new MyException(CodeEnum.NOT_FOUND.getCode()
+                , "not find student with id = " + id);
     }
 
     /**
@@ -72,9 +75,14 @@ public class StudentService {
      * @param student 更新的对象
      * @return 更新后的对象
      */
-    public StudentEntity updateById(Long id, StudentEntity student) {
-        student.setId(id);
-        return studentRepository.save(student);
+    public StudentEntity updateById(Long id, StudentEntity student) throws Exception {
+        // 如果存在返回查询的对象，不存在则抛出异常
+        if (studentRepository.findById(id).isPresent()) {
+            student.setId(id);
+            return studentRepository.save(student);
+        }
+        throw new MyException(CodeEnum.NOT_FOUND.getCode()
+                , "not find student with id = " + id);
     }
 
     /**
@@ -82,7 +90,7 @@ public class StudentService {
      *
      * @param id 删除ID
      */
-    public void deleteById(Long id) {
+    public void deleteById(Long id) throws Exception {
         studentRepository.deleteById(id);
     }
 
@@ -92,7 +100,7 @@ public class StudentService {
      * @param age 年龄
      * @return
      */
-    public List<StudentEntity> findByAgeGreaterThanEqual(int age) {
+    public List<StudentEntity> findByAgeGreaterThanEqual(int age) throws Exception {
         return studentRepository.findByAgeGreaterThanEqual(age);
     }
 
@@ -102,7 +110,7 @@ public class StudentService {
      * @param hobby 兴趣爱好
      * @return
      */
-    public List<StudentEntity> findByHobbyLike(String hobby) {
+    public List<StudentEntity> findByHobbyLike(String hobby) throws Exception {
         return studentRepository.findByHobbyLike("%" + hobby + "%");
     }
 
@@ -112,7 +120,7 @@ public class StudentService {
      * @param sex 性别
      * @return
      */
-    public List<StudentEntity> findBySex(String sex) {
+    public List<StudentEntity> findBySex(String sex) throws Exception {
         return studentRepository.findBySex(sex);
     }
 }

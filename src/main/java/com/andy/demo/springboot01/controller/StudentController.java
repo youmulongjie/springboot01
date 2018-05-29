@@ -10,12 +10,14 @@
  */
 package com.andy.demo.springboot01.controller;
 
+import com.andy.demo.springboot01.bean.CodeEnum;
 import com.andy.demo.springboot01.bean.ResultBean;
 import com.andy.demo.springboot01.entity.StudentEntity;
 import com.andy.demo.springboot01.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -33,6 +35,7 @@ import java.util.List;
 public class StudentController {
     @Autowired
     private StudentService studentService;
+    private ObjectError error;
 
     /**
      * 获取所有对象 Get请求
@@ -40,8 +43,8 @@ public class StudentController {
      * @return 所有的对象
      */
     @GetMapping(value = "/student/list")
-    public List<StudentEntity> list() {
-        return studentService.list();
+    public ResultBean list() throws Exception {
+        return ResultBean.success(studentService.list());
     }
 
     /**
@@ -51,7 +54,7 @@ public class StudentController {
      * @return 根据ID查询到的对象
      */
     @GetMapping(value = "/student/{id}")
-    public ResultBean findById(@PathVariable("id") Long id) {
+    public ResultBean findById(@PathVariable("id") Long id) throws Exception {
         return ResultBean.success(studentService.getOneById(id));
     }
 
@@ -63,10 +66,15 @@ public class StudentController {
      * @return 保存后的StudentEntity实体对象
      */
     @PostMapping(value = "/student")
-    public ResultBean save(@Valid StudentEntity studentEntity, BindingResult bindingResult) {
+    public ResultBean save(@Valid StudentEntity studentEntity, BindingResult bindingResult) throws Exception {
         ResultBean messageBean;
         if (bindingResult.hasErrors()) {
-            messageBean = ResultBean.failure(bindingResult.getFieldError().getDefaultMessage());
+            StringBuffer sb = new StringBuffer(10);
+            List<ObjectError> errors = bindingResult.getAllErrors();
+            for (ObjectError error : errors) {
+                sb.append(error.getDefaultMessage() + " ");
+            }
+            messageBean = ResultBean.failure(CodeEnum.VALID_NOT_PASS.getCode(), sb.toString());
         } else {
             messageBean = ResultBean.success(studentService.save(studentEntity));
         }
@@ -77,12 +85,23 @@ public class StudentController {
      * 更新 Put请求
      *
      * @param id      更新的 Student对象ID
-     * @param student 更新的 Student对象
+     * @param student 更新的 Student对象，开启验证
      * @return 更新后 Student对象
      */
     @PutMapping(value = "/student/{id}")
-    public StudentEntity updateById(@PathVariable("id") Long id, @Valid StudentEntity student) {
-        return studentService.updateById(id, student);
+    public ResultBean updateById(@PathVariable("id") Long id, @Valid StudentEntity student, BindingResult bindingResult) throws Exception {
+        ResultBean messageBean;
+        if (bindingResult.hasErrors()) {
+            StringBuffer sb = new StringBuffer(10);
+            List<ObjectError> errors = bindingResult.getAllErrors();
+            for (ObjectError error : errors) {
+                sb.append(error.getDefaultMessage() + " ");
+            }
+            messageBean = ResultBean.failure(CodeEnum.VALID_NOT_PASS.getCode(), sb.toString());
+        } else {
+            messageBean = ResultBean.success(studentService.updateById(id, student));
+        }
+        return messageBean;
     }
 
     /**
@@ -91,8 +110,13 @@ public class StudentController {
      * @param id 要删除的ID
      */
     @DeleteMapping(value = "/student/{id}")
-    public void deleteById(@PathVariable("id") Long id) {
-        studentService.deleteById(id);
+    public ResultBean deleteById(@PathVariable("id") Long id) throws Exception {
+        try {
+            studentService.deleteById(id);
+            return ResultBean.success();
+        } catch (Exception e) {
+            return ResultBean.failure(CodeEnum.UNKNOWN.getCode(), "删除失败：" + e.getMessage());
+        }
     }
 
     /**
@@ -102,8 +126,8 @@ public class StudentController {
      * @return 年龄大于等于参数的 Student对象集合
      */
     @GetMapping(value = "/student/age/gt/{age}")
-    public List<StudentEntity> findByAgeGreaterThanEqual(@PathVariable("age") int age) {
-        return studentService.findByAgeGreaterThanEqual(age);
+    public ResultBean findByAgeGreaterThanEqual(@PathVariable("age") int age) throws Exception {
+        return ResultBean.success(studentService.findByAgeGreaterThanEqual(age));
     }
 
     /**
@@ -113,8 +137,9 @@ public class StudentController {
      * @return 兴趣爱好包含参数的 Student对象集合
      */
     @GetMapping(value = "/student/hobby/{hobby}")
-    public List<StudentEntity> findByHobbyLike(@PathVariable("hobby") String hobby) {
-        return studentService.findByHobbyLike(hobby);
+    public ResultBean findByHobbyLike(@PathVariable("hobby") String hobby) throws Exception {
+        // jpa like 传参时需自己加 %
+        return ResultBean.success(studentService.findByHobbyLike("%" + hobby + "%"));
     }
 
     /**
@@ -124,7 +149,7 @@ public class StudentController {
      * @return 性别等于参数的 Student对象集合
      */
     @GetMapping(value = "/student/sex/{sex}")
-    public List<StudentEntity> findBySex(@PathVariable("sex") String sex) {
-        return studentService.findBySex(sex);
+    public ResultBean findBySex(@PathVariable("sex") String sex) throws Exception {
+        return ResultBean.success(studentService.findBySex(sex));
     }
 }

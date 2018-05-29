@@ -53,7 +53,7 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- 热启动 -->
+        <!-- 热启动，修改代码 点击 Build Project时，自动启动 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>

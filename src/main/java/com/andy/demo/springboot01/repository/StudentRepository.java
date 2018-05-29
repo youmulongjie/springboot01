@@ -46,6 +46,6 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
      * @param sex 性别
      * @return
      */
-    @Query(value = "select * from student where sex = ?", nativeQuery = true)
+    @Query(value = "select * from student_entity where sex = ?", nativeQuery = true)
     List<StudentEntity> findBySex(String sex);
 }

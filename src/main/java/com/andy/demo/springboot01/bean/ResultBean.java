@@ -25,14 +25,19 @@ import lombok.Data;
 @Builder // 依赖lombok插件，的构造器注解
 public class ResultBean {
     /**
-     * 返回状态成功，或者失败（失败结果保存在errorMsg）
+     * 返回状态成功，或者失败（失败结果保存在code， msg）
      */
     private boolean status;
 
     /**
-     * 错误提示信息
+     * 返回码
      */
-    private String errorMsg;
+    public Integer code;
+
+    /**
+     * 返回提示信息
+     */
+    private String msg;
 
     /**
      * 对象信息
@@ -46,7 +51,7 @@ public class ResultBean {
      * @return
      */
     public static ResultBean success(Object data) {
-        return ResultBean.builder().status(true).data(data).build();
+        return ResultBean.builder().status(true).code(CodeEnum.SUCCESS.getCode()).data(data).build();
     }
 
     /**
@@ -61,10 +66,10 @@ public class ResultBean {
     /**
      * 返回错误，带错误信息
      *
-     * @param errorMsg 错误信息
+     * @param msg 错误信息
      * @return
      */
-    public static ResultBean failure(String errorMsg) {
-        return ResultBean.builder().status(false).errorMsg(errorMsg).build();
+    public static ResultBean failure(int code, String msg) {
+        return ResultBean.builder().status(false).code(code).msg(msg).build();
     }
 }
