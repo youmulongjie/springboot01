@@ -6,7 +6,7 @@
     <groupId>com.andy.demo</groupId>
     <artifactId>springboot01</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <name>springboot01</name>
     <description>Demo project for Spring Boot</description>
@@ -69,13 +69,14 @@
                     <fork>true</fork>
                 </configuration>
                 <!--下面是将应用打包发布需要增加的插件-->
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <!--<packaging>jar</packaging>-->
+                <!--<executions>-->
+                <!--<execution>-->
+                <!--<goals>-->
+                <!--<goal>repackage</goal>-->
+                <!--</goals>-->
+                <!--</execution>-->
+                <!--</executions>-->
             </plugin>
         </plugins>
     </build>

@@ -26,26 +26,26 @@ import java.util.List;
  */
 public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
     /**
-     * 查找年龄大于等于 参数的 Student集合
+     * 查找年龄大于等于 参数的 Student集合（JPA GreaterThanEqual）
      *
      * @param age 年龄
      * @return
      */
-    public List<StudentEntity> findByAgeGreaterThanEqual(int age);
+    List<StudentEntity> findByAgeGreaterThanEqual(int age);
 
     /**
-     * 根据兴趣爱好 查找Student集合
+     * 根据兴趣爱好 查找Student集合（JPA like，参数需加 %）
      *
      * @param hobby 兴趣爱好
      * @return
      */
-    public List<StudentEntity> findByHobbyLike(String hobby);
+    List<StudentEntity> findByHobbyLike(String hobby);
 
     /**
-     * 根据性别查找 Student集合
+     * 根据性别查找 Student集合（原生SQL）
      * @param sex 性别
      * @return
      */
     @Query(value = "select * from student where sex = ?", nativeQuery = true)
-    public List<StudentEntity> findBySex(String sex);
+    List<StudentEntity> findBySex(String sex);
 }

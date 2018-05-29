@@ -29,7 +29,7 @@ import java.io.Serializable;
  * @since 1.0.0
  */
 @Entity
-@Data
+@Data  // 依赖lombok插件，相当于 get\set 访问器，重写 toString()等
 public class StudentEntity implements Serializable {
     /**
      * ID 自增主键
@@ -57,4 +57,5 @@ public class StudentEntity implements Serializable {
      */
     @Size(max = 10, message = "兴趣爱好不能超过10个字符")
     public String hobby;
+
 }

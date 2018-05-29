@@ -28,7 +28,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @Service
-@Transactional
+@Transactional  // 开启事务控制
 public class StudentService {
     @Autowired
     private StudentRepository studentRepository;
@@ -59,7 +59,10 @@ public class StudentService {
      * @return 实体对象
      */
     public StudentEntity getOneById(Long id) {
-        return studentRepository.findById(id).get();
+         if(studentRepository.findById(id).isPresent()){
+             return studentRepository.findById(id).get();
+         }
+         return null;
     }
 
     /**
