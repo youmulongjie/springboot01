@@ -35,7 +35,6 @@ import java.util.List;
 public class StudentController {
     @Autowired
     private StudentService studentService;
-    private ObjectError error;
 
     /**
      * 获取所有对象 Get请求

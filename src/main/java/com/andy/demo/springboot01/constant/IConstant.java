@@ -10,9 +10,6 @@
  */
 package com.andy.demo.springboot01.constant;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * 〈一句话功能简述〉<br> 
  * 〈全局 变量类〉

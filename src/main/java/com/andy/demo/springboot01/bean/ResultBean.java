@@ -32,7 +32,7 @@ public class ResultBean {
     /**
      * 返回码
      */
-    public Integer code;
+    private Integer code;
 
     /**
      * 返回提示信息
