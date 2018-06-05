@@ -1,6 +1,6 @@
 /**
  * Copyright (C), 2015-2018
- * FileName: ResultBean
+ * FileName: JsonResultBean
  * Author:   59458
  * Date:     2018/5/27 16:28
  * Description: 接口返回封装Bean
@@ -10,6 +10,8 @@
  */
 package com.andy.demo.springboot01.bean;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
 
@@ -23,25 +25,30 @@ import lombok.Data;
  */
 @Data
 @Builder // 依赖lombok插件，的构造器注解
-public class ResultBean {
+@ApiModel(description = "返回响应数据")
+public class JsonResultBean {
     /**
      * 返回状态成功，或者失败（失败结果保存在code， msg）
      */
+    @ApiModelProperty(value = "是否成功")
     private boolean status;
 
     /**
      * 返回码
      */
+    @ApiModelProperty("错误编码（status = false 时）")
     private Integer code;
 
     /**
      * 返回提示信息
      */
+    @ApiModelProperty("错误信息（status = false 时）")
     private String msg;
 
     /**
      * 对象信息
      */
+    @ApiModelProperty(value = "返回对象")
     private Object data;
 
     /**
@@ -50,8 +57,8 @@ public class ResultBean {
      * @param data 数据
      * @return
      */
-    public static ResultBean success(Object data) {
-        return ResultBean.builder().status(true).code(CodeEnum.SUCCESS.getCode()).data(data).build();
+    public static JsonResultBean success(Object data) {
+        return JsonResultBean.builder().status(true).code(CodeEnum.SUCCESS.getCode()).data(data).build();
     }
 
     /**
@@ -59,7 +66,7 @@ public class ResultBean {
      *
      * @return
      */
-    public static ResultBean success() {
+    public static JsonResultBean success() {
         return success(null);
     }
 
@@ -69,7 +76,7 @@ public class ResultBean {
      * @param msg 错误信息
      * @return
      */
-    public static ResultBean failure(int code, String msg) {
-        return ResultBean.builder().status(false).code(code).msg(msg).build();
+    public static JsonResultBean failure(int code, String msg) {
+        return JsonResultBean.builder().status(false).code(code).msg(msg).build();
     }
 }

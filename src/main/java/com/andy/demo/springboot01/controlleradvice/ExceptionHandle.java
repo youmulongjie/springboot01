@@ -11,7 +11,7 @@
 package com.andy.demo.springboot01.controlleradvice;
 
 import com.andy.demo.springboot01.bean.CodeEnum;
-import com.andy.demo.springboot01.bean.ResultBean;
+import com.andy.demo.springboot01.bean.JsonResultBean;
 import com.andy.demo.springboot01.exception.MyException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,22 +40,22 @@ public class ExceptionHandle {
      */
     @ResponseBody
     @ExceptionHandler(value = Exception.class)
-    public ResultBean handleException(Exception e) {
-        ResultBean resultBean;
+    public JsonResultBean handleException(Exception e) {
+        JsonResultBean resultBean;
         if (e instanceof MyException) {
             MyException myException = (MyException) e;
-            resultBean = ResultBean.failure(myException.getCode(), myException.getMessage());
+            resultBean = JsonResultBean.failure(myException.getCode(), myException.getMessage());
         } else {
             // 记录 未知异常日志
             log.error(CodeEnum.UNKNOWN.getDesc(), e);
-            resultBean = ResultBean.failure(CodeEnum.UNKNOWN.getCode(), e.getMessage());
+            resultBean = JsonResultBean.failure(CodeEnum.UNKNOWN.getCode(), e.getMessage());
         }
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             String res = objectMapper.writeValueAsString(resultBean);
             log.info("Response ：{}", res);
         } catch (JsonProcessingException e1) {
-            log.error("出错了", e1);
+            log.error("jackson beanToJson 异常！", e1);
         }
         log.info("***********捕获异常，结束*********");
         return resultBean;

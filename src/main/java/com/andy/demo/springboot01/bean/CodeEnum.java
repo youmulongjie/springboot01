@@ -4,7 +4,7 @@ package com.andy.demo.springboot01.bean;
  * Code 枚举类
  */
 public enum CodeEnum {
-    SUCCESS(1, "成功"), UNKNOWN(-1, "未知错误"), NOT_FOUND(11, "未发现错误"), VALID_NOT_PASS(21, "验证未通过");
+    SUCCESS(1, "成功"), UNKNOWN(-1, "未知错误"), NOT_FOUND(11, "未发现错误"), VALID_NOT_PASS(21, "验证未通过"), ALREADY_EXISTS(12, "已存在错误");
     /**
      * 状态码
      */

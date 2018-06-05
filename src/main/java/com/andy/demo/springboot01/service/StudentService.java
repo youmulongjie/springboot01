@@ -41,6 +41,13 @@ public class StudentService {
      * @return 返回新增的实体
      */
     public StudentEntity save(StudentEntity student) throws Exception {
+        Long id = student.getId();
+        if (null != id) {
+            if (studentRepository.findById(id).isPresent()) {
+                throw new MyException(CodeEnum.ALREADY_EXISTS.getCode()
+                        , "student with id = " + id + " already exists!");
+            }
+        }
         return studentRepository.save(student);
     }
 
