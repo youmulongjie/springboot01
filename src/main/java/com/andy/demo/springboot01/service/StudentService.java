@@ -15,9 +15,16 @@ import com.andy.demo.springboot01.entity.StudentEntity;
 import com.andy.demo.springboot01.exception.MyException;
 import com.andy.demo.springboot01.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.*;
 import java.util.List;
 
 /**
@@ -129,5 +136,58 @@ public class StudentService {
      */
     public List<StudentEntity> findBySex(String sex) throws Exception {
         return studentRepository.findBySex(sex);
+    }
+
+    /**
+     * 分页查询
+     *
+     * @param currentPage 当前页数
+     * @param pageShowNum 每页显示条数
+     * @return
+     */
+    public Page<StudentEntity> page(int currentPage, int pageShowNum) {
+        Pageable pageable = PageRequest.of(currentPage, pageShowNum);
+        return studentRepository.findAll(pageable);
+    }
+
+    /**
+     * 排序分页查询，按年龄升序
+     *
+     * @param currentPage 当前页数
+     * @param pageShowNum 每页显示条数
+     * @return
+     */
+    public Page<StudentEntity> pageAndSortByAgeAsc(int currentPage, int pageShowNum) {
+        Sort sort = Sort.by(Sort.Order.asc("age"), Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(currentPage, pageShowNum, sort);
+        return studentRepository.findAll(pageable);
+    }
+
+
+    /**
+     * 按年龄查询后（大于参数 age 的） 排序分页查询，按年龄升序
+     * （注：此方法 需要 StudentRepository 继承 JpaSpecificationExecutor<StudentEntity>）
+     *
+     * @param age         查询的年龄
+     * @param currentPage 当前页数
+     * @param pageShowNum 每页显示条数
+     * @return
+     */
+    public Page<StudentEntity> pageAndSortByAgeAscWhereAgeGreaterThan(int age, int currentPage, int pageShowNum) {
+        Sort sort = Sort.by(Sort.Order.asc("age"), Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(currentPage, pageShowNum, sort);
+
+        Specification<StudentEntity> specification = new Specification<StudentEntity>() {
+            @Nullable
+            @Override
+            public Predicate toPredicate(Root<StudentEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                // 取 年龄大于 25
+                Path<Integer> path = root.get("age");
+                return criteriaBuilder.gt(path, age) && criteriaBuilder.equal();
+            }
+        };
+
+        // findAll(specification, pageable) 方法继承于 JpaSpecificationExecutor<StudentEntity>接口
+        return studentRepository.findAll(specification, pageable);
     }
 }

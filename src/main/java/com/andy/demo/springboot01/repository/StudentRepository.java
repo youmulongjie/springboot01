@@ -12,6 +12,7 @@ package com.andy.demo.springboot01.repository;
 
 import com.andy.demo.springboot01.entity.StudentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.List;
  * @create 2018/5/25
  * @since 1.0.0
  */
-public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
+public interface StudentRepository extends JpaRepository<StudentEntity, Long>, JpaSpecificationExecutor<StudentEntity> {
     /**
      * 查找年龄大于等于 参数的 Student集合（JPA GreaterThanEqual）
      *
@@ -43,9 +44,12 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
 
     /**
      * 根据性别查找 Student集合（原生SQL）
+     *
      * @param sex 性别
      * @return
      */
     @Query(value = "select * from student_entity where sex = ?", nativeQuery = true)
     List<StudentEntity> findBySex(String sex);
+
+
 }

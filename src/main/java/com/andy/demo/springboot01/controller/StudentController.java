@@ -18,7 +18,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +39,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/student") // controller 根访问目录
 @Api("StudentController 相关RESTFul API")
+@Slf4j
 public class StudentController {
     @Autowired
     private StudentService studentService;
@@ -173,5 +176,65 @@ public class StudentController {
     @GetMapping(value = "/sex/{sex}")
     public JsonResultBean findBySex(@PathVariable("sex") String sex) throws Exception {
         return JsonResultBean.success(studentService.findBySex(sex));
+    }
+
+    /**
+     * 分页查询 ，Get请求
+     *
+     * @param currentPage 当前页数，从1开始
+     * @param pageShowNum 每页展示个数
+     * @return
+     */
+    @ApiOperation(value = "分页查询", notes = "分页查询Student列表信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "currentPage", dataType = "Integer", value = "当前页数，从0开始", required = true, paramType = "path"),
+            @ApiImplicitParam(name = "pageShowNum", dataType = "Integer", value = "每页展示个数", required = true, paramType = "path")
+    })
+    @GetMapping(value = "/page/{currentPage}/{pageShowNum}")
+    public JsonResultBean page(@PathVariable("currentPage") int currentPage, @PathVariable("pageShowNum") int pageShowNum) {
+        Page<StudentEntity> page = studentService.page(currentPage, pageShowNum);
+        log.info("查询总条数：{}", page.getTotalElements());
+        log.info("查询总页数：{}", page.getTotalPages());
+        log.info("当前页数：{}", page.getNumber() + 1);
+        log.info("当前页数集合：{}", page.getContent());
+        log.info("当前页数集合数量：", page.getNumberOfElements());
+        return JsonResultBean.success(page);
+    }
+
+    /**
+     * 排序分页查询 ，Get请求
+     *
+     * @param currentPage 当前页数，从1开始
+     * @param pageShowNum 每页展示个数
+     * @return
+     */
+    @ApiOperation(value = "按年龄升序排序、分页查询", notes = "按年龄升序排序分页查询Student列表信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "currentPage", dataType = "Integer", value = "当前页数，从0开始", required = true, paramType = "path"),
+            @ApiImplicitParam(name = "pageShowNum", dataType = "Integer", value = "每页展示个数", required = true, paramType = "path")
+    })
+    @GetMapping(value = "/pageAndSortByAgeAsc/{currentPage}/{pageShowNum}")
+    public JsonResultBean pageAndSortByAgeAsc(@PathVariable("currentPage") int currentPage, @PathVariable("pageShowNum") int pageShowNum) {
+        Page<StudentEntity> page = studentService.pageAndSortByAgeAsc(currentPage, pageShowNum);
+        return JsonResultBean.success(page);
+    }
+
+    /**
+     * 按年龄查询后（大于参数 age 的） 排序分页查询，按年龄升序 ，Get请求
+     *
+     * @param currentPage 当前页数，从1开始
+     * @param pageShowNum 每页展示个数
+     * @return
+     */
+    @ApiOperation(value = "按年龄查询后（大于参数 age 的） 排序（按年龄升序）分页查询", notes = "按年龄查询后（大于参数 age 的） 排序（按年龄升序）分页查询Student列表信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "age", dataType = "Integer", value = "查询年龄", required = true, paramType = "query"),
+            @ApiImplicitParam(name = "currentPage", dataType = "Integer", value = "当前页数，从0开始", required = true, paramType = "path"),
+            @ApiImplicitParam(name = "pageShowNum", dataType = "Integer", value = "每页展示个数", required = true, paramType = "path")
+    })
+    @GetMapping(value = "/pageAndSortByAgeAscWhereAgeGreaterThan/{currentPage}/{pageShowNum}")
+    public JsonResultBean pageAndSortByAgeAscWhereAgeGreaterThan(@RequestParam("age") int age, @PathVariable("currentPage") int currentPage, @PathVariable("pageShowNum") int pageShowNum) {
+        Page<StudentEntity> page = studentService.pageAndSortByAgeAscWhereAgeGreaterThan(age, currentPage, pageShowNum);
+        return JsonResultBean.success(page);
     }
 }
