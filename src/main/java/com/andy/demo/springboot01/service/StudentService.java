@@ -165,7 +165,7 @@ public class StudentService {
 
 
     /**
-     * 按年龄查询后（大于参数 age 的） 排序分页查询，按年龄升序
+     * 单条件查询后，分页排序（查询年龄大于 age的列表，分页排序）
      * （注：此方法 需要 StudentRepository 继承 JpaSpecificationExecutor<StudentEntity>）
      *
      * @param age         查询的年龄
@@ -181,9 +181,41 @@ public class StudentService {
             @Nullable
             @Override
             public Predicate toPredicate(Root<StudentEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                // 取 年龄大于 25
                 Path<Integer> path = root.get("age");
-                return criteriaBuilder.gt(path, age) && criteriaBuilder.equal();
+                // 取 年龄大于 age 的条件，单条件查询
+                return criteriaBuilder.gt(path, age);
+            }
+        };
+
+        // findAll(specification, pageable) 方法继承于 JpaSpecificationExecutor<StudentEntity>接口
+        return studentRepository.findAll(specification, pageable);
+    }
+
+    /**
+     * 多条件查询后、分页排序（查询 年龄 > age，兴趣爱好 like hobby 的列表，分页排序）
+     *
+     * @param age         年龄
+     * @param hobby       兴趣爱好
+     * @param currentPage 当前第几页
+     * @param pageShowNum 每页显示条数
+     * @return
+     */
+    public Page<StudentEntity> pageAndSortWithConditions(int age, String hobby, int currentPage, int pageShowNum) {
+        Sort sort = Sort.by(Sort.Order.asc("age"), Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(currentPage, pageShowNum, sort);
+
+        Specification<StudentEntity> specification = new Specification<StudentEntity>() {
+            @Nullable
+            @Override
+            public Predicate toPredicate(Root<StudentEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                Path<Integer> agePath = root.get("age");
+                Path<String> hobbyPath = root.get("hobby");
+
+                // 取 年龄大于 age ，兴趣爱好 like hobby 的条件
+                Predicate ageP = criteriaBuilder.gt(agePath, age);
+                Predicate hobbyP = criteriaBuilder.like(hobbyPath, "%" + hobby + "%");
+                // 多条件查询
+                return query.where(ageP, hobbyP).getRestriction();
             }
         };
 

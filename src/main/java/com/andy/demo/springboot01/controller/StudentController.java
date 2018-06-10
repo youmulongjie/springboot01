@@ -181,7 +181,7 @@ public class StudentController {
     /**
      * 分页查询 ，Get请求
      *
-     * @param currentPage 当前页数，从1开始
+     * @param currentPage 当前页数，从0开始
      * @param pageShowNum 每页展示个数
      * @return
      */
@@ -193,18 +193,22 @@ public class StudentController {
     @GetMapping(value = "/page/{currentPage}/{pageShowNum}")
     public JsonResultBean page(@PathVariable("currentPage") int currentPage, @PathVariable("pageShowNum") int pageShowNum) {
         Page<StudentEntity> page = studentService.page(currentPage, pageShowNum);
+        showPageInfo(page);
+        return JsonResultBean.success(page);
+    }
+
+    private void showPageInfo(Page<StudentEntity> page) {
         log.info("查询总条数：{}", page.getTotalElements());
         log.info("查询总页数：{}", page.getTotalPages());
         log.info("当前页数：{}", page.getNumber() + 1);
         log.info("当前页数集合：{}", page.getContent());
         log.info("当前页数集合数量：", page.getNumberOfElements());
-        return JsonResultBean.success(page);
     }
 
     /**
      * 排序分页查询 ，Get请求
      *
-     * @param currentPage 当前页数，从1开始
+     * @param currentPage 当前页数，从0开始
      * @param pageShowNum 每页展示个数
      * @return
      */
@@ -216,17 +220,19 @@ public class StudentController {
     @GetMapping(value = "/pageAndSortByAgeAsc/{currentPage}/{pageShowNum}")
     public JsonResultBean pageAndSortByAgeAsc(@PathVariable("currentPage") int currentPage, @PathVariable("pageShowNum") int pageShowNum) {
         Page<StudentEntity> page = studentService.pageAndSortByAgeAsc(currentPage, pageShowNum);
+        showPageInfo(page);
         return JsonResultBean.success(page);
     }
 
     /**
-     * 按年龄查询后（大于参数 age 的） 排序分页查询，按年龄升序 ，Get请求
+     * 单条件查询后，分页排序（查询年龄大于 age的列表，分页排序），Get请求
      *
-     * @param currentPage 当前页数，从1开始
+     * @param age         年龄
+     * @param currentPage 当前页数，从0开始
      * @param pageShowNum 每页展示个数
      * @return
      */
-    @ApiOperation(value = "按年龄查询后（大于参数 age 的） 排序（按年龄升序）分页查询", notes = "按年龄查询后（大于参数 age 的） 排序（按年龄升序）分页查询Student列表信息")
+    @ApiOperation(value = "单条件查询后，分页排序（查询年龄大于 age的列表，分页排序）", notes = "单条件查询后，分页排序（查询年龄大于 age的列表，分页排序）Student列表信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "age", dataType = "Integer", value = "查询年龄", required = true, paramType = "query"),
             @ApiImplicitParam(name = "currentPage", dataType = "Integer", value = "当前页数，从0开始", required = true, paramType = "path"),
@@ -235,6 +241,30 @@ public class StudentController {
     @GetMapping(value = "/pageAndSortByAgeAscWhereAgeGreaterThan/{currentPage}/{pageShowNum}")
     public JsonResultBean pageAndSortByAgeAscWhereAgeGreaterThan(@RequestParam("age") int age, @PathVariable("currentPage") int currentPage, @PathVariable("pageShowNum") int pageShowNum) {
         Page<StudentEntity> page = studentService.pageAndSortByAgeAscWhereAgeGreaterThan(age, currentPage, pageShowNum);
+        showPageInfo(page);
+        return JsonResultBean.success(page);
+    }
+
+    /**
+     * 多条件查询后、分页排序（查询 年龄 > age，兴趣爱好 like hobby 的列表，分页排序),POST 请求
+     *
+     * @param age         年龄
+     * @param hobby       兴趣爱好
+     * @param currentPage 当前页数，从0开始
+     * @param pageShowNum 每页展示个数
+     * @return
+     */
+    @ApiOperation(value = "多条件查询后、分页排序（查询 年龄 > age，兴趣爱好 like hobby 的列表，分页排序）", notes = "多条件查询后、分页排序（查询 年龄 > age，兴趣爱好 like hobby 的列表，分页排序）Student列表信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "age", dataType = "Integer", value = "查询年龄", required = true, paramType = "query"),
+            @ApiImplicitParam(name = "hobby", dataType = "String", value = "兴趣爱好", required = true, paramType = "query"),
+            @ApiImplicitParam(name = "currentPage", dataType = "Integer", value = "当前页数，从0开始", required = true, paramType = "path"),
+            @ApiImplicitParam(name = "pageShowNum", dataType = "Integer", value = "每页展示个数", required = true, paramType = "path")
+    })
+    @PostMapping(value = "/pageAndSortWithConditions/{currentPage}/{pageShowNum}")
+    public JsonResultBean pageAndSortWithConditions(@RequestParam("age") int age, @RequestParam("hobby") String hobby, @PathVariable("currentPage") int currentPage, @PathVariable("pageShowNum") int pageShowNum) {
+        Page<StudentEntity> page = studentService.pageAndSortWithConditions(age, hobby, currentPage, pageShowNum);
+        showPageInfo(page);
         return JsonResultBean.success(page);
     }
 }
