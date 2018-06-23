@@ -38,6 +38,9 @@ import javax.servlet.http.HttpServletRequest;
 @Component // 申明为组件，被扫描到
 @Slf4j     // 依赖lombok插件，的Log注解
 public class HttpAspect {
+    // 记录访问方法开始时间
+    ThreadLocal<Long> startTime = new ThreadLocal<>();
+
     /**
      * 定义切入点（controller 包下所有类 所有方法）
      */
@@ -51,6 +54,8 @@ public class HttpAspect {
     @Before("print()")
     public void beforeMethod() {
         log.info("**********开始**********");
+        startTime.set(System.currentTimeMillis());
+
         // 从 持有上下文的Request容器中，获取 HttpServletRequest 对象
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = requestAttributes.getRequest();
@@ -80,7 +85,8 @@ public class HttpAspect {
             log.error("出错了", e);
         }
 
-        log.info("***********结束*********");
+        log.info("***********结束，用时：{}毫秒*********", (System.currentTimeMillis() - startTime.get()
+        ));
     }
 
     /**
